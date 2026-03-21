@@ -18,8 +18,9 @@ export function BookmarkProvider({ children }) {
   };
 
   const removeBookmark = (id) => {
-    setBookmarks(prev => prev.filter(i => i !== id));
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks.filter(i => i !== id)));
+    const newBookmarks = bookmarks.filter(i => i !== id);
+    setBookmarks(newBookmarks);
+    localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
   };
 
   const toggleBookmark = (id) => {

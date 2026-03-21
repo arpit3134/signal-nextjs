@@ -7,3 +7,7 @@ export const fadeUp = {
 export const pulse = {
   animation: 'pulse 2s infinite'
 };
+
+export const bounce = {
+  animation: 'bounce 2s infinite'
+};
