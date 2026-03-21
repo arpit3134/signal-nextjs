@@ -2,12 +2,12 @@
 
 import { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { articles } from '../../../lib/data';
-import Navbar from '../../../components/layout/Navbar';
-import Footer from '../../../components/layout/Footer';
-import Toast from '../../../components/ui/Toast';
-import Loader from '../../../components/ui/Loader';
-import Tag from '../../../components/ui/Tag';
+import { articles } from '@/lib/data';
+import Navbar from '@/components/layout/Navbar';
+import Footer from '@/components/layout/Footer';
+import Tag from '@/components/ui/Tag';
+import Toast from '@/components/ui/Toast';
+import Loader from '@/components/ui/Loader';
 
 export default function ArticlePage() {
   const params = useParams();
