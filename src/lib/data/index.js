@@ -1,7 +1,9 @@
+import { storage } from '../storage';
+
 export const articles = [
   {
     id: 0, cat: 'ai', lbl: '🤖 AI', em: '🧠',
-    image: 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
+    image: storage.articleImage(0) || 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=800&h=400&fit=crop',
     title: 'Large Language Models Are Reshaping How We Think About Intelligence',
     desc: 'A deep exploration of how generative AI is challenging our assumptions about creativity and cognition.',
     author: 'Sarah Chen', date: 'Mar 19', read: '9 min', views: '12.4k', likes: 89,
@@ -9,7 +11,7 @@ export const articles = [
   },
   {
     id: 1, cat: 'finance', lbl: '📈 Finance', em: '💰',
-    image: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
+    image: storage.articleImage(1) || 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?w=800&h=400&fit=crop',
     title: 'How Index Funds Are Quietly Owning the Entire Market',
     desc: 'The passive investing revolution and its strange consequences for capitalism.',
     author: 'Priya Singh', date: 'Mar 18', read: '6 min', views: '8.2k', likes: 156,
@@ -17,7 +19,7 @@ export const articles = [
   },
   {
     id: 2, cat: 'tech', lbl: '💻 Tech', em: '💾',
-    image: 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=400&fit=crop',
+    image: storage.articleImage(2) || 'https://images.unsplash.com/photo-1620712943543-bcc4688e7485?w=800&h=400&fit=crop',
     title: 'The Open Source Models Quietly Beating GPT-4',
     desc: 'Llama, Mistral, and a dozen forks that are rewriting the AI landscape.',
     author: 'Dev Patel', date: 'Mar 17', read: '5 min', views: '15.3k', likes: 234,
@@ -25,7 +27,7 @@ export const articles = [
   },
   {
     id: 3, cat: 'sports', lbl: '⚽ Sports', em: '⚽',
-    image: 'https://images.unsplash.com/photo-1522778119026-d364f97c34eb?w=800&h=400&fit=crop',
+    image: storage.articleImage(3) || 'https://images.unsplash.com/photo-1522778119026-d364f97c34eb?w=800&h=400&fit=crop',
     title: 'How Data Analytics is Redefining Football Strategy',
     desc: 'From xG to player tracking — how numbers are changing the beautiful game.',
     author: 'Marco Silva', date: 'Mar 16', read: '7 min', views: '6.8k', likes: 98,
@@ -33,7 +35,7 @@ export const articles = [
   },
   {
     id: 4, cat: 'farming', lbl: '🌾 Farming', em: '🌱',
-    image: 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
+    image: storage.articleImage(4) || 'https://images.unsplash.com/photo-1625246333195-78d9c38ad449?w=800&h=400&fit=crop',
     title: 'How Precision Agriculture is Feeding a Billion More People',
     desc: 'GPS tractors, drone monitoring, and AI crop models transforming food production.',
     author: 'Amara Osei', date: 'Mar 15', read: '8 min', views: '5.2k', likes: 67,
@@ -41,7 +43,7 @@ export const articles = [
   },
   {
     id: 5, cat: 'health', lbl: '💚 Health', em: '❄️',
-    image: 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&h=400&fit=crop',
+    image: storage.articleImage(5) || 'https://images.unsplash.com/photo-1545205597-3d9d02c29597?w=800&h=400&fit=crop',
     title: 'The Science of Cold Exposure and Mental Resilience',
     desc: 'What 200+ studies say about ice baths, cortisol, and cognitive performance.',
     author: 'James Okafor', date: 'Mar 14', read: '8 min', views: '4.9k', likes: 112,
@@ -49,7 +51,7 @@ export const articles = [
   },
   {
     id: 6, cat: 'business', lbl: '💼 Business', em: '📊',
-    image: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
+    image: storage.articleImage(6) || 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&h=400&fit=crop',
     title: 'Why Remote-First Companies Are Outperforming Office-Based Peers',
     desc: 'New data on productivity, retention, and culture in distributed organizations.',
     author: 'Zara Ahmed', date: 'Mar 13', read: '6 min', views: '7.4k', likes: 203,
@@ -57,7 +59,7 @@ export const articles = [
   },
   {
     id: 7, cat: 'trends', lbl: '🔥 Trends', em: '📱',
-    image: 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop',
+    image: storage.articleImage(7) || 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=800&h=400&fit=crop',
     title: 'The 10 Digital Trends That Will Define 2025',
     desc: 'From ambient AI to spatial computing — the forces reshaping our digital lives.',
     author: 'Kai Tanaka', date: 'Mar 12', read: '5 min', views: '9.1k', likes: 567,
@@ -65,7 +67,7 @@ export const articles = [
   },
   {
     id: 8, cat: 'travel', lbl: '✈️ Travel', em: '🗺️',
-    image: 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=800&h=400&fit=crop',
+    image: storage.articleImage(8) || 'https://images.unsplash.com/photo-1506929562872-bb421503ef21?w=800&h=400&fit=crop',
     title: "Slow Travel is the New Luxury — And It's More Affordable",
     desc: 'How spending longer in fewer places is changing what travel means.',
     author: 'Lucia Fernández', date: 'Mar 11', read: '7 min', views: '3.8k', likes: 145,
