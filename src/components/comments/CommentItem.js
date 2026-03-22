@@ -1,23 +1,17 @@
 export default function CommentItem({ comment }) {
   return (
-    <div style={{ display: 'flex', gap: '0.8rem' }}>
-      <div style={{
-        width: '34px',
-        height: '34px',
-        borderRadius: '50%',
-        background: comment.color,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: '#fff',
-        fontWeight: '600'
-      }}>{comment.avatar}</div>
+    <div className="cmt-it">
+      <div className="ca" style={{ background: comment.bg }}>
+        {comment.n.charAt(0)}
+      </div>
       <div>
-        <div>
-          <span style={{ fontWeight: '600', color: 'var(--ink)' }}>{comment.name}</span>
-          <span style={{ fontSize: '0.65rem', marginLeft: '0.5rem', color: 'var(--ink3)' }}>{comment.time}</span>
+        <span className="cb-n">{comment.n}</span>
+        <span className="cb-ti">{comment.t}</span>
+        <div className="cb-tx">{comment.tx}</div>
+        <div className="cb-ac">
+          <button className="cb-a">♡ {Math.floor(Math.random() * 15) + 1}</button>
+          <button className="cb-a">↩ Reply</button>
         </div>
-        <div style={{ fontSize: '0.8rem', marginTop: '0.2rem', color: 'var(--ink2)' }}>{comment.text}</div>
       </div>
     </div>
   );

@@ -1,22 +1,37 @@
-export default function Footer() {
+export default function Footer({ categories, onCategoryClick }) {
   return (
-    <footer style={{
-      background: '#f0ede6',
-      borderTop: '1px solid #e0ddd6',
-      padding: '3rem clamp(1rem,5vw,3rem) 1.5rem'
-    }}>
-      <div style={{ maxWidth: '1240px', margin: '0 auto', textAlign: 'center' }}>
-        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(200px, 1fr))', gap: '2rem', marginBottom: '2rem', textAlign: 'left' }}>
-          <div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '1rem' }}>
-              <div style={{ width: '8px', height: '8px', background: '#e8420a', borderRadius: '50%' }}></div>
-              <span style={{ fontFamily: 'Playfair Display, Georgia', fontSize: '1.2rem', fontWeight: '700' }}>Signal</span>
+    <footer>
+      <div className="ft-in">
+        <div className="ft-top">
+          <div className="ft-brand">
+            <span className="ft-logo">Signal</span>
+            <p className="ft-p">Discover articles, ideas, and tools across every topic that matters. No noise, just signal.</p>
+            <div className="socials">
+              {['🐦', '📷', '💼', '📺', '💬'].map((icon, i) => (
+                <div key={i} className="soc">{icon}</div>
+              ))}
             </div>
-            <p style={{ fontSize: '0.75rem', color: '#4a4640' }}>Discover articles, ideas, and insights across every topic that matters. No noise, just signal.</p>
+          </div>
+          <div className="ft-col">
+            <h4>Blog Categories</h4>
+            <ul>
+              {categories.slice(1, 6).map(cat => (
+                <li key={cat.id}><a onClick={() => onCategoryClick(cat.id)}>{cat.icon} {cat.name}</a></li>
+              ))}
+            </ul>
+          </div>
+          <div className="ft-col">
+            <h4>Tools</h4>
+            <ul><li><a>📈 Finance Tools</a></li><li><a>💚 Health Tools</a></li><li><a>🤖 AI Tools</a></li><li><a>💻 Tech Tools</a></li></ul>
+          </div>
+          <div className="ft-col">
+            <h4>Company</h4>
+            <ul><li><a>About Us</a></li><li><a>Write for Us</a></li><li><a>Newsletter</a></li><li><a>Contact</a></li></ul>
           </div>
         </div>
-        <div style={{ borderTop: '1px solid #e0ddd6', paddingTop: '1rem' }}>
-          <span style={{ fontSize: '0.65rem', color: '#9a9690' }}>© 2025 Signal Media. All rights reserved.</span>
+        <div className="ft-bot">
+          <span className="ft-copy">© 2025 Signal Media. All rights reserved.</span>
+          <div className="ft-leg"><a>Privacy</a><a>Terms</a><a>Cookies</a></div>
         </div>
       </div>
     </footer>

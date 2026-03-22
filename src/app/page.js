@@ -1,183 +1,181 @@
 'use client';
 
-import { useState } from 'react';
-import { articles, categories, trending, tools, tickerData, initialComments } from '@/lib/data';
-import { useLiveCounter, useScrollProgress, useTheme, useToast } from '@/lib/hooks';
-import { getTagColor } from '@/lib/utils/colors';
+import { useState, useEffect, useRef } from 'react';
+import { articles, categories, trending, tickerData, initialComments } from '@/lib/data';
 
-// Layout Components
-import Navbar from '@/components/layout/Navbar';
-import Footer from '@/components/layout/Footer';
-import Hero from '@/components/layout/Hero';
-import Ticker from '@/components/layout/Ticker';
-
-// Article Components
-import ArticleCard from '@/components/articles/ArticleCard';
-import ArticleModal from '@/components/articles/ArticleModal';
+// Components
+import Navbar from '@/components/navbar/Navbar';
+import Hero from '@/components/hero/Hero';
+import Ticker from '@/components/ticker/Ticker';
+import Footer from '@/components/footer/Footer';
 import CategoryFilter from '@/components/articles/CategoryFilter';
 import FeaturedGrid from '@/components/articles/FeaturedGrid';
-
-// Sidebar Components
-import Sidebar from '@/components/sidebar/Sidebar';
-
-// Shared Components
-import SearchBar from '@/components/shared/SearchBar';
-import Newsletter from '@/components/shared/Newsletter';
-
-// UI Components
+import ArticleList from '@/components/articles/ArticleList';
+import SearchBar from '@/components/search/SearchBar';
+import Newsletter from '@/components/newsletter/Newsletter';
 import Toast from '@/components/ui/Toast';
-import Loader from '@/components/ui/Loader';
-import ProgressBar from '@/components/ui/ProgressBar';
+import TrendingList from '@/components/sidebar/TrendingList';
+import QuickTools from '@/components/sidebar/QuickTools';
+import BrowseTopics from '@/components/sidebar/BrowseTopics';
+import ReadingStats from '@/components/sidebar/ReadingStats';
+import Modal from '@/components/modal/Modal';
 
 export default function Home() {
-  const [displayArticles, setDisplayArticles] = useState(articles);
+  const [displayArts, setDisplayArts] = useState(articles);
   const [activeCategory, setActiveCategory] = useState('all');
   const [loading, setLoading] = useState(false);
+  const [liveCount, setLiveCount] = useState(3241);
+  const [isDark, setIsDark] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState(null);
   const [bookmarks, setBookmarks] = useState([]);
   const [likedArticles, setLikedArticles] = useState({});
   const [readCount, setReadCount] = useState(0);
-  
-  const liveCount = useLiveCounter();
-  const scrollProgress = useScrollProgress();
-  const { isDark, toggleTheme } = useTheme();
-  const { toast, showToast, hideToast } = useToast();
+  const [toast, setToast] = useState({ show: false, message: '' });
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [windowWidth, setWindowWidth] = useState(1200);
+
+  const cDRef = useRef(null);
+  const cRRef = useRef(null);
+  const mouseX = useRef(0);
+  const mouseY = useRef(0);
+  const ringX = useRef(0);
+  const ringY = useRef(0);
+
+  useEffect(() => {
+    const handleResize = () => setWindowWidth(window.innerWidth);
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
+
+  const isMobile = windowWidth < 768;
+
+  // Custom cursor
+  useEffect(() => {
+    if (isMobile) return;
+    const onMove = (e) => {
+      mouseX.current = e.clientX;
+      mouseY.current = e.clientY;
+      if (cDRef.current) { cDRef.current.style.left = mouseX.current + 'px'; cDRef.current.style.top = mouseY.current + 'px'; }
+    };
+    const animate = () => {
+      ringX.current += (mouseX.current - ringX.current) * 0.12;
+      ringY.current += (mouseY.current - ringY.current) * 0.12;
+      if (cRRef.current) { cRRef.current.style.left = ringX.current + 'px'; cRRef.current.style.top = ringY.current + 'px'; }
+      requestAnimationFrame(animate);
+    };
+    document.addEventListener('mousemove', onMove);
+    animate();
+    return () => document.removeEventListener('mousemove', onMove);
+  }, [isMobile]);
+
+  // Scroll progress
+  useEffect(() => {
+    const onScroll = () => {
+      const winScroll = document.documentElement.scrollTop;
+      const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+      setScrollProgress((winScroll / height) * 100);
+      const prog = document.getElementById('prog');
+      if (prog) prog.style.width = ((winScroll / height) * 100) + '%';
+    };
+    window.addEventListener('scroll', onScroll);
+    return () => window.removeEventListener('scroll', onScroll);
+  }, []);
+
+  // Load saved data
+  useEffect(() => {
+    const savedTheme = localStorage.getItem('theme');
+    if (savedTheme === 'dark') { setIsDark(true); document.documentElement.setAttribute('data-theme', 'dark'); }
+    const savedBookmarks = localStorage.getItem('bookmarks');
+    if (savedBookmarks) setBookmarks(JSON.parse(savedBookmarks));
+    const savedLikes = localStorage.getItem('likedArticles');
+    if (savedLikes) setLikedArticles(JSON.parse(savedLikes));
+  }, []);
+
+  useEffect(() => { localStorage.setItem('bookmarks', JSON.stringify(bookmarks)); }, [bookmarks]);
+  useEffect(() => { localStorage.setItem('likedArticles', JSON.stringify(likedArticles)); }, [likedArticles]);
+
+  // Live counter
+  useEffect(() => {
+    const interval = setInterval(() => setLiveCount(prev => prev + Math.floor(Math.random() * 40) - 20), 4000);
+    return () => clearInterval(interval);
+  }, []);
+
+  const showToastMsg = (msg) => {
+    setToast({ show: true, message: msg });
+    setTimeout(() => setToast({ show: false, message: '' }), 2800);
+  };
+
+  const toggleTheme = () => {
+    setIsDark(!isDark);
+    if (!isDark) { document.documentElement.setAttribute('data-theme', 'dark'); localStorage.setItem('theme', 'dark'); }
+    else { document.documentElement.removeAttribute('data-theme'); localStorage.setItem('theme', 'light'); }
+    showToastMsg(isDark ? '☀️ Light mode' : '🌙 Dark mode');
+  };
 
   const filterByCategory = (catId) => {
     setActiveCategory(catId);
     setLoading(true);
     setTimeout(() => {
-      if (catId === 'all') {
-        setDisplayArticles(articles);
-      } else {
-        setDisplayArticles(articles.filter(a => a.cat === catId));
-      }
+      if (catId === 'all') setDisplayArts(articles);
+      else setDisplayArts(articles.filter(a => a.cat === catId));
       setLoading(false);
     }, 300);
   };
 
-  const openArticle = (article) => {
-    setSelectedArticle(article);
+  const openArt = (id) => {
+    const a = articles[id];
+    if (!a) return;
+    setSelectedArticle(a);
     setReadCount(prev => prev + 1);
   };
 
-  const closeModal = () => {
-    setSelectedArticle(null);
-  };
+  const closeModal = () => setSelectedArticle(null);
 
-  const toggleLike = (id) => {
-    setLikedArticles(prev => {
-      const newState = { ...prev };
-      if (newState[id]) {
-        delete newState[id];
-        showToast('🤍 Like removed');
-      } else {
-        newState[id] = true;
-        showToast('❤️ Liked!');
-      }
-      localStorage.setItem('likedArticles', JSON.stringify(newState));
-      return newState;
-    });
-  };
-
-  const toggleBookmark = (id) => {
-    setBookmarks(prev => {
-      if (prev.includes(id)) {
-        showToast('🗑 Removed from bookmarks');
-        const newBookmarks = prev.filter(i => i !== id);
-        localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
-        return newBookmarks;
-      } else {
-        showToast('📌 Bookmarked!');
-        const newBookmarks = [...prev, id];
-        localStorage.setItem('bookmarks', JSON.stringify(newBookmarks));
-        return newBookmarks;
-      }
-    });
-  };
-
-  const handleSubscribe = (email) => {
-    showToast(`🎉 Welcome to Signal! Check your inbox at ${email}`);
-  };
+  const subscribe = () => showToastMsg('🎉 Welcome to Signal!');
 
   return (
     <div>
-      <ProgressBar progress={scrollProgress} />
-      <Navbar 
-        isDark={isDark} 
-        onToggleTheme={toggleTheme} 
-        bookmarksCount={bookmarks.length}
-        onFilterAll={() => filterByCategory('all')}
-      />
-      
-      <Hero liveCount={liveCount} />
+      {!isMobile && (
+        <>
+          <div ref={cDRef} className="cur cur-d" style={{ position: 'fixed' }}></div>
+          <div ref={cRRef} className="cur cur-r" style={{ position: 'fixed' }}></div>
+        </>
+      )}
+      <div id="prog"></div>
+
+      <Navbar isDark={isDark} onToggleTheme={toggleTheme} onBookmark={() => showToastMsg(`📌 ${bookmarks.length} bookmarks`)} bookmarkCount={bookmarks.length} onHome={() => filterByCategory('all')} />
+      <Hero liveCount={liveCount} articlesCount={articles.length} readCount={readCount} bookmarkCount={bookmarks.length} />
       <Ticker data={tickerData} />
-      
-      <div style={{ maxWidth: '1240px', margin: '0 auto', padding: '3rem clamp(1rem,5vw,3rem) 4rem' }}>
-        <SearchBar articles={articles} onSelect={openArticle} />
-        
-        <div style={{ marginTop: '3rem' }}>
-          <CategoryFilter 
-            categories={categories} 
-            activeCategory={activeCategory} 
-            onSelect={filterByCategory} 
-          />
-          
-          <FeaturedGrid articles={articles} onOpenArticle={openArticle} />
-          
-          {loading ? (
-            <Loader />
-          ) : (
-            <div style={{ display: 'flex', gap: '2.5rem', flexWrap: 'wrap' }}>
-              <div style={{ flex: 1 }}>
-                <div style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                  <span style={{ fontFamily: 'monospace', fontSize: '0.7rem', textTransform: 'uppercase', color: 'var(--ink3)' }}>📰 Latest</span>
-                  <span style={{ flex: 1, height: '1px', background: 'var(--border)' }}></span>
-                </div>
-                <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(320px, 1fr))', gap: '1.5rem' }}>
-                  {displayArticles.map(article => (
-                    <ArticleCard
-                      key={article.id}
-                      article={article}
-                      onClick={openArticle}
-                      isLiked={likedArticles[article.id]}
-                      isBookmarked={bookmarks.includes(article.id)}
-                      onLike={toggleLike}
-                      onBookmark={toggleBookmark}
-                    />
-                  ))}
-                </div>
-              </div>
-              
-              <Sidebar 
-                trending={trending}
-                tools={tools}
-                categories={categories}
-                readCount={readCount}
-                onCategorySelect={filterByCategory}
-              />
+
+      <div className="wrap" style={{ paddingTop: '3rem' }}>
+        <div className="sec-head"><span className="sec-label">Featured Stories</span><a className="sec-link">View all →</a></div>
+        <CategoryFilter categories={categories} active={activeCategory} onSelect={filterByCategory} />
+        <FeaturedGrid articles={articles} onOpen={openArt} />
+      </div>
+
+      <div className="wrap" style={{ paddingTop: '2rem' }}>
+        <div className="two-col">
+          <div>
+            <div className="sec-label" style={{ marginBottom: '1rem', display: 'flex', alignItems: 'center', gap: '.5rem' }}>
+              Latest <span style={{ flex: 1, height: '1px', background: 'var(--border)' }}></span>
             </div>
-          )}
-        </div>
-        
-        <div style={{ marginTop: '4rem' }}>
-          <Newsletter onSubscribe={handleSubscribe} />
+            <SearchBar articles={articles} onSelect={openArt} />
+            {loading ? <div style={{ padding: '3rem', textAlign: 'center' }}>Loading...</div> : <ArticleList articles={displayArts} onOpen={openArt} />}
+          </div>
+          <aside className="sidebar">
+            <TrendingList trends={trending} />
+            <QuickTools />
+            <BrowseTopics categories={categories} onSelect={filterByCategory} />
+            <ReadingStats readCount={readCount} />
+          </aside>
         </div>
       </div>
-      
-      <Footer />
-      
-      <ArticleModal 
-        article={selectedArticle}
-        isOpen={!!selectedArticle}
-        onClose={closeModal}
-        isLiked={selectedArticle ? likedArticles[selectedArticle.id] : false}
-        isBookmarked={selectedArticle ? bookmarks.includes(selectedArticle.id) : false}
-        onLike={toggleLike}
-        onBookmark={toggleBookmark}
-      />
-      
-      <Toast message={toast.message} show={toast.show} onClose={hideToast} />
+
+      <Newsletter onSubscribe={subscribe} />
+      <Footer categories={categories} onCategoryClick={filterByCategory} />
+      <Modal article={selectedArticle} isOpen={!!selectedArticle} onClose={closeModal} />
+      <Toast message={toast.message} show={toast.show} />
     </div>
   );
 }
