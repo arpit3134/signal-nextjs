@@ -1,26 +1,47 @@
 export default function ArticleCard({ article, onClick, isLiked, isBookmarked, onLike, onBookmark }) {
-  const getTagClass = (cat) => {
-    const classes = { ai: 'tag-ai', tech: 'tag-tech', finance: 'tag-finance', sports: 'tag-sports', farming: 'tag-farming', health: 'tag-health' };
-    return classes[cat] || 'tag-tech';
+  const getTagStyle = (cat) => {
+    const styles = {
+      ai: { background: '#fde8e8', color: '#b02020' },
+      tech: { background: '#e8f2fd', color: '#1a52a0' },
+      finance: { background: '#e8fde8', color: '#1d7a3a' },
+      sports: { background: '#fdf5e8', color: '#8b5e1d' },
+      farming: { background: '#edfde8', color: '#3a7a1d' },
+      health: { background: '#e8fdf5', color: '#1d7a6a' },
+      business: { background: '#fde8f0', color: '#8b1d3a' },
+      trends: { background: '#fdeee8', color: '#8b3a1d' },
+      travel: { background: '#e8f0fd', color: '#1d3a8b' }
+    };
+    return styles[cat] || { background: '#f0ede6', color: '#4a4640' };
   };
+  
+  const tagStyle = getTagStyle(article.cat);
+  
   return (
-    <div className="feat-card" onClick={onClick}>
-      <div style={{ padding: '1.5rem' }}>
-        <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.8rem' }}>
-          <span className={`tag ${getTagClass(article.cat)}`}>{article.lbl}</span>
-          <span style={{ fontSize: '1.4rem' }}>{article.em}</span>
-        </div>
-        <h3 className="card-title" style={{ fontSize: '1rem' }}>{article.title}</h3>
-        <p className="card-desc" style={{ fontSize: '0.8rem' }}>{article.desc}</p>
-        <div className="card-meta">
-          <span>{article.author}</span><span className="dot"></span><span>{article.date}</span>
-          <span className="read-time">{article.read}</span>
+    <div className="article-card" onClick={onClick}>
+      <div className="article-img">
+        <img src={article.image} alt={article.title} />
+      </div>
+      <div className="article-content">
+        <span className="article-tag" style={tagStyle}>{article.lbl}</span>
+        <h3 className="article-title">{article.title}</h3>
+        <p className="article-desc">{article.desc}</p>
+        <div className="article-meta">
+          <span>{article.author}</span>
+          <span>•</span>
+          <span>{article.date}</span>
+          <span className="read-time" style={{ marginLeft: 'auto' }}>{article.read}</span>
         </div>
       </div>
-      <div style={{ display: 'flex', borderTop: '1px solid var(--border)', padding: '0.6rem 1.2rem', gap: '1rem' }}>
-        <button onClick={(e) => { e.stopPropagation(); onLike(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isLiked ? 'var(--accent)' : 'var(--ink3)' }}>❤️ {isLiked ? 'Liked' : 'Like'}</button>
-        <button onClick={(e) => { e.stopPropagation(); onBookmark(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isBookmarked ? 'var(--accent)' : 'var(--ink3)' }}>🔖 {isBookmarked ? 'Saved' : 'Save'}</button>
-        <button onClick={(e) => { e.stopPropagation(); onClick(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', marginLeft: 'auto' }}>Read →</button>
+      <div className="article-actions">
+        <button onClick={(e) => { e.stopPropagation(); onLike(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isLiked ? 'var(--accent)' : 'var(--ink3)' }}>
+          ❤️ {article.likes + (isLiked ? 1 : 0)}
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); onBookmark(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: isBookmarked ? 'var(--accent)' : 'var(--ink3)' }}>
+          🔖 {isBookmarked ? 'Saved' : 'Save'}
+        </button>
+        <button onClick={(e) => { e.stopPropagation(); onClick(); }} style={{ background: 'none', border: 'none', cursor: 'pointer', color: 'var(--accent)', marginLeft: 'auto' }}>
+          Read →
+        </button>
       </div>
     </div>
   );
